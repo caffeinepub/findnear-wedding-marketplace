@@ -949,11 +949,13 @@ ${aiPreferences ? `6. Special note: "${aiPreferences}" — we've factored this i
       >
         <div className="flex flex-col items-center gap-6 animate-fade-in">
           <div className="flex flex-col items-center gap-2">
-            <img
-              src="/assets/uploads/ChatGPT-Image-Mar-17-2026-03_38_47-PM-1.png"
-              alt="APR United"
-              className="h-20 w-20 object-contain drop-shadow-xl"
-            />
+            <div className="bg-white rounded-xl p-2 shadow-lg">
+              <img
+                src="/assets/uploads/ChatGPT-Image-Mar-17-2026-03_38_47-PM-1.png"
+                alt="APR United"
+                className="h-20 w-20 object-contain"
+              />
+            </div>
             <div className="flex items-baseline gap-2">
               <span className="text-5xl font-black tracking-wide drop-shadow-lg text-white">
                 APR United
@@ -1042,11 +1044,13 @@ ${aiPreferences ? `6. Special note: "${aiPreferences}" — we've factored this i
         <div className="relative mx-auto max-w-7xl px-6 pt-5 pb-4 lg:px-8">
           <nav className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-2">
-              <img
-                src="/assets/uploads/ChatGPT-Image-Mar-17-2026-03_38_47-PM-1.png"
-                alt="APR United"
-                className="h-10 w-10 object-contain drop-shadow"
-              />
+              <div className="bg-white rounded-lg p-1 shadow-sm">
+                <img
+                  src="/assets/uploads/ChatGPT-Image-Mar-17-2026-03_38_47-PM-1.png"
+                  alt="APR United"
+                  className="h-10 w-10 object-contain"
+                />
+              </div>
               <div>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-2xl font-black tracking-wide font-display text-white drop-shadow">
