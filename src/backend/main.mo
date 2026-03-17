@@ -2,7 +2,7 @@ import Array "mo:core/Array";
 import Order "mo:core/Order";
 import List "mo:core/List";
 import Text "mo:core/Text";
-import Runtime "mo:core/Runtime";
+import Outcall "./http-outcalls/outcall";
 
 actor {
   // Data Types
@@ -27,6 +27,7 @@ actor {
   // Storage
   let leads = List.empty<Lead>();
   let businessListings = List.empty<BusinessListing>();
+  var openAiApiKey : Text = "";
 
   // Comparison Modules
   module Lead {
@@ -38,6 +39,50 @@ actor {
   module BusinessListing {
     public func compare(a : BusinessListing, b : BusinessListing) : Order.Order {
       Text.compare(a.businessName, b.businessName);
+    };
+  };
+
+  // HTTP Transform (required for outcalls)
+  public query func transform(input : Outcall.TransformationInput) : async Outcall.TransformationOutput {
+    Outcall.transform(input);
+  };
+
+  // OpenAI API Key Management
+  public func setOpenAiApiKey(key : Text) : async () {
+    openAiApiKey := key;
+  };
+
+  public query func getApiKeyStatus() : async Bool {
+    openAiApiKey != "";
+  };
+
+  // AI Event Planner
+  public func generateEventPlan(eventType : Text, city : Text, budget : Text, guestCount : Text, eventDate : Text, preferences : Text) : async Text {
+    if (openAiApiKey == "") {
+      return "API_KEY_MISSING";
+    };
+
+    let userMessage = "Event Type: " # eventType # ", City: " # city # ", Budget: " # budget # ", Guests: " # guestCount # ", Date: " # eventDate # ", Preferences: " # preferences;
+
+    let systemPrompt = "You are an expert Indian event planner specializing in weddings, corporate events, birthdays, and social gatherings. Given the details, create a comprehensive event plan with clear sections: 1) Venue Suggestions, 2) Vendor Recommendations, 3) Event Timeline, 4) Budget Breakdown, 5) Decor & Theme Ideas, 6) Pro Tips. Be practical, detailed, and tailored to Indian events.";
+
+    let requestBody = "{\"model\":\"gpt-4o-mini\",\"messages\":[{\"role\":\"system\",\"content\":\"" # systemPrompt # "\"},{\"role\":\"user\",\"content\":\"" # userMessage # "\"}],\"max_tokens\":1200}";
+
+    let headers : [Outcall.Header] = [
+      { name = "Content-Type"; value = "application/json" },
+      { name = "Authorization"; value = "Bearer " # openAiApiKey },
+    ];
+
+    try {
+      let response = await Outcall.httpPostRequest(
+        "https://api.openai.com/v1/chat/completions",
+        headers,
+        requestBody,
+        transform,
+      );
+      response;
+    } catch (e) {
+      "ERROR: " # e.message();
     };
   };
 
@@ -53,7 +98,7 @@ actor {
     leads.add(newLead);
   };
 
-  public query ({ caller }) func getAllLeads() : async [Lead] {
+  public query func getAllLeads() : async [Lead] {
     leads.toArray().sort();
   };
 
@@ -71,7 +116,7 @@ actor {
     businessListings.add(newListing);
   };
 
-  public query ({ caller }) func getAllBusinessListings() : async [BusinessListing] {
+  public query func getAllBusinessListings() : async [BusinessListing] {
     businessListings.toArray().sort();
   };
 };
